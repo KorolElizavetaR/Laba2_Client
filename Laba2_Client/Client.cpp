@@ -28,16 +28,32 @@ int main(int args, char * argv[])
 	addr.sin_family = AF_INET;
 
 	SOCKET Connection = socket(AF_INET, SOCK_DGRAM, 0);
-	char buf[100];
-	const int bufsize = sizeof(buf);
+	char line[100];
+	const int bufsize = sizeof(line);
+	char sizeofline[3]; int size;
 
 	cout << "Input line : ";
-	cin.getline(buf, bufsize);
+	cin.getline(line, bufsize);
 	//cin >> buf;
-	if (sendto(Connection, buf, bufsize, 0, (SOCKADDR*)&addr, sizeofaddr) == SOCKET_ERROR)
+	if (sendto(Connection, line, bufsize, 0, (SOCKADDR*)&addr, sizeofaddr) == SOCKET_ERROR) //send line
 	{
 		cout << "Sendto failed. " << WSAGetLastError() << endl;
 		return -1;
+	}
+	else
+	{
+		cout << "Server received line!" << endl;
+	}
+
+	if (recvfrom(Connection, sizeofline, 3, 0, (SOCKADDR*)&addr, &sizeofaddr) == SOCKET_ERROR) //receive line length
+	{
+		cout << "Recv from server failed. " << WSAGetLastError() << endl;
+		return -1;
+	}
+	else
+	{
+		size = atoi(sizeofline);
+		cout << "Line length: " << size << endl;
 	}
 
 	closesocket(Connection);
