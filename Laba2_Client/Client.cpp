@@ -13,6 +13,8 @@ using namespace std;
 
 int main(int args, char * argv[])
 {
+	int requiredlength; char requiredlengthchar[3];
+
 	WSADATA data;
 	WORD DDLversion = MAKEWORD(2, 2);
 	if (WSAStartup(DDLversion, &data) != 0)
@@ -54,6 +56,41 @@ int main(int args, char * argv[])
 	{
 		size = atoi(sizeofline);
 		cout << "Line length: " << size << endl;
+	}
+
+	if (recvfrom(Connection, requiredlengthchar, sizeof(requiredlengthchar), 0, (SOCKADDR*)&addr, &sizeofaddr) == SOCKET_ERROR) //receive recomended length
+	{
+		cout << "Recv from server failed. " << WSAGetLastError() << endl;
+		return -1;
+	}
+	else
+	{
+		requiredlength = atoi(requiredlengthchar);
+		cout << "Recommended length: " << requiredlength << endl;
+	}
+
+	if (size == requiredlength)
+	{
+		char newline[100];
+		char difference_char[3];
+		if (recvfrom(Connection, newline, sizeof(newline), 0, (SOCKADDR*)&addr, &sizeofaddr) == SOCKET_ERROR) //receive newline
+		{
+			cout << "Recv from server failed. " << WSAGetLastError() << endl;
+			return -1;
+		}
+		else
+		{
+			cout << "New line: " << newline << endl;
+		}
+		if (recvfrom(Connection, difference_char, sizeof(difference_char), 0, (SOCKADDR*)&addr, &sizeofaddr) == SOCKET_ERROR) //receive difference
+		{
+			cout << "Recv from server failed. " << WSAGetLastError() << endl;
+			return -1;
+		}
+		else
+		{
+			cout << "Difference: " << difference_char << endl;
+		}
 	}
 
 	closesocket(Connection);
